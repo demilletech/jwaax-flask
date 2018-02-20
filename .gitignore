@@ -56,3 +56,8 @@ docs/_build/
 
 # PyBuilder
 target/
+
+
+flaskenv/
+.vscode/
+dt_auth/site_secret.txt
