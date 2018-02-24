@@ -5,19 +5,45 @@ import calendar
 import time
 import requests
 import jwt
+import json
 
-__secret = [""]
+__pubkey = [""]
+__prikey = [""]
 __domain = [""]
 __indrak = [""]
+__stinfo = [{}]
 
 
-def __get_secret():
-    f = open('dt_auth/site_secret.txt', 'r')
+def get_site_info():
+    if __stinfo[0] != {}:
+        return __stinfo[0]
+    f = open('site_info.json', 'r')
+    info = f.read()
+    f.close()
+    __stinfo[0] = json.loads(info)
+    return __stinfo[0]
+
+
+def __get_pubkey():
+    if __pubkey[0] != "":
+        return __pubkey[0]
+
+    f = open('token_key.pub', 'r')
     key = f.read()
     f.close()
-    __domain[0] = key[:key.index(":")]
-    __secret[0] = key[key.index(":") + 1:]
-    return __secret[0]
+    __pubkey[0] = key
+    return __pubkey[0]
+
+
+def __get_prikey():
+    if __prikey[0] != "":
+        return __pubkey[0]
+
+    f = open('token_key.pem', 'r')
+    key = f.read()
+    f.close()
+    __prikey[0] = key
+    return __prikey[0]
 
 
 def __get_indra_key():
@@ -30,7 +56,7 @@ def __get_indra_key():
 
 
 def get_domain():
-    __get_secret()
+    get_site_info()
     return __domain[0]
 
 
@@ -46,7 +72,7 @@ def verify_token(token):
 
 
 def encode_token(payload):
-    return jwt.encode(payload, __get_secret(), algorithm='HS256').decode('UTF-8')
+    return jwt.encode(payload, __get_prikey(), algorithm='HS256').decode('UTF-8')
 
 
 def generate_token(uniqueid, returl):

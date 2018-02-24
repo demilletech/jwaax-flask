@@ -61,3 +61,6 @@ target/
 flaskenv/
 .vscode/
 dt_auth/site_secret.txt
+
+token_key.key
+token_key.pem

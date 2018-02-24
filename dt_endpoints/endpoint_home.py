@@ -25,7 +25,7 @@ def index():
 def signin():
     newjt = auth_jwaax_provider.generate_token(
         '0', '127.0.0.1:5000/signin_jwaax/')
-    return redirect('https://secure.demilletech.net/external/signin/?request_token=' + newjt)
+    return redirect('https://secure.demilletech.net/api/external/signin/?request_token=' + newjt)
 
 
 @home_page.route('/signin_jwaax/', methods=['GET'])
