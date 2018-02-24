@@ -21,6 +21,8 @@ def get_site_info():
     info = f.read()
     f.close()
     __stinfo[0] = json.loads(info)
+    __domain[0] = __stinfo[0]['DOMAIN']
+
     return __stinfo[0]
 
 
@@ -72,18 +74,18 @@ def verify_token(token):
 
 
 def encode_token(payload):
-    return jwt.encode(payload, __get_prikey(), algorithm='HS256').decode('UTF-8')
+    return jwt.encode(payload, __get_prikey(), algorithm='ES512').decode('UTF-8')
 
 
-def generate_token(uniqueid, returl):
+def generate_token(uniqueid, returl, userfed=False):
     payload = {
         "aud": "secure.demilletech.net",
-        "domain": get_domain(),
-        "uniqueid": uniqueid,
+        "jti": uniqueid,
         "returl": returl,
         "iat": get_epoch_time(),
-        "exp": get_epoch_time() + 120,
-        "iss": get_domain()
+        "ttl": 20,
+        "iss": get_domain(),
+        "userfed": userfed
     }
     return encode_token(payload)
 
@@ -91,7 +93,7 @@ def generate_token(uniqueid, returl):
 def decode_token(encoded_token):
     try:
         decoded_token = jwt.decode(encoded_token, key=__get_indra_key(),
-                                   algorithms='PS256', audience=get_domain())
+                                   algorithms='ES512', audience=get_domain())
     except jwt.exceptions.DecodeError:
         return "DECODE_ERROR"
     except jwt.exceptions.ExpiredSignatureError:
